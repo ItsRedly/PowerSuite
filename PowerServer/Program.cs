@@ -9,18 +9,18 @@ namespace PowerServer
     public static class Program
     {
         static HttpServer webServer;
-        static ConsoleApplication application;
+        static ConsoleTools tools;
         [STAThread]
         public static void Main(string[] args)
         {
-            application = new ConsoleApplication("PowerServer");
+            tools = new("PowerServer");
             if (args.Length > 1 || args.Length == 1 && args[0] == "/help")
             {
-                application.Help("PowerServer", new string[] { "Argument 1: Path to settings file (optional)", @"Example: PowerServer.exe C:\SettingsFile.json" });
-                application.WaitForKeyPress();
+                tools.Help("PowerServer", new string[] { "Argument 1: Path to settings file (optional)", @"Example: PowerServer.exe C:\SettingsFile.json" });
+                tools.WaitForKeyPress();
                 return;
             }
-            application.Header("PowerServer", "Version 1.0");
+            tools.Header("PowerServer", "Version 1.0");
             RunRoutine(args.Length > 0 && File.Exists(args[0]) ? ServerSettings.FromFile(args[0]) : new ServerSettings());
         }
 
@@ -81,7 +81,7 @@ namespace PowerServer
 
             while (true)
             {
-                switch (application.Select(new string[] { (settings.EnableDB ? "Disable" : "Enable") + " PowerDB", (settings.EnableWebServer ? "Disable" : "Enable") + " PowerWeb", "Run PowerSend", "Save config file", "Exit" })) {
+                switch (tools.Select(new string[] { (settings.EnableDB ? "Disable" : "Enable") + " PowerDB", (settings.EnableWebServer ? "Disable" : "Enable") + " PowerWeb", "Run PowerSend", "Save config file", "Exit" })) {
                     case 1:
                         settings.EnableDB = !settings.EnableDB;
                         if (settings.EnableDB) { webServer.PostRequestHandle += DBPostRequestHandler; }
@@ -95,11 +95,11 @@ namespace PowerServer
                         break;
 
                     case 3:
-                        string email = application.Prompt("What is the email address that is going to be used?");
-                        string displayName = application.Prompt("What is the email display name that is going to be used?");
-                        string password = application.Prompt("What is the application key for that email address?");
-                        string header = application.Prompt("What is the email header going to be?");
-                        string content = application.Prompt(@"What is the email content going to be (use \n for newlines)?").Replace(@"\n", "\n");
+                        string email = tools.Prompt("What is the email address that is going to be used?");
+                        string displayName = tools.Prompt("What is the email display name that is going to be used?");
+                        string password = tools.Prompt("What is the application key for that email address?");
+                        string header = tools.Prompt("What is the email header going to be?");
+                        string content = tools.Prompt(@"What is the email content going to be (use \n for newlines)?").Replace(@"\n", "\n");
                         SmtpClient smtp = new SmtpClient() { Host = "smtp.gmail.com", Port = 587, EnableSsl = true, DeliveryMethod = SmtpDeliveryMethod.Network, UseDefaultCredentials = false, Credentials = new NetworkCredential(email, password) };
                         foreach (string file in Directory.GetFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users")))
                         {
@@ -110,20 +110,20 @@ namespace PowerServer
                     case 4:
                         bool enableDB = false;
                         bool enableWebServer = false;
-                        string fileName = application.Prompt("What filename do you want to export it to?");
+                        string fileName = tools.Prompt("What filename do you want to export it to?");
                         fileName = fileName == "" ? "settings" : fileName;
-                        string enableDBPrompt = application.Prompt("Would you like to run PowerDB?");
+                        string enableDBPrompt = tools.Prompt("Would you like to run PowerDB?");
                         while (!new string[] { "Yes", "Y", "yes", "y", "No", "N", "no", "n" }.Contains(enableDBPrompt))
                         {
-                            application.WriteLine("Invalid anwser. Valid anwsers are: Yes, Y, yes, y, No, N, no, n", ConsoleColor.Red);
-                            enableDBPrompt = application.Prompt("Would you like to run PowerDB?");
+                            tools.WriteLine("Invalid anwser. Valid anwsers are: Yes, Y, yes, y, No, N, no, n", ConsoleColor.Red);
+                            enableDBPrompt = tools.Prompt("Would you like to run PowerDB?");
                         }
                         enableDB = new string[] { "Yes", "Y", "yes", "y" }.Contains(enableDBPrompt);
-                        string enableWebServerPrompt = application.Prompt("Would you like to run PowerWeb?");
+                        string enableWebServerPrompt = tools.Prompt("Would you like to run PowerWeb?");
                         while (!new string[] { "Yes", "Y", "yes", "y", "No", "N", "no", "n" }.Contains(enableWebServerPrompt))
                         {
-                            application.WriteLine("Invalid anwser. Valid anwsers are: Yes, Y, yes, y, No, N, no, n", ConsoleColor.Red);
-                            enableWebServerPrompt = application.Prompt("Would you like to run PowerWeb?");
+                            tools.WriteLine("Invalid anwser. Valid anwsers are: Yes, Y, yes, y, No, N, no, n", ConsoleColor.Red);
+                            enableWebServerPrompt = tools.Prompt("Would you like to run PowerWeb?");
                         }
                         enableWebServer = new string[] { "Yes", "Y", "yes", "y" }.Contains(enableDBPrompt);
                         File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName + ".json"), new ServerSettings() { EnableDB = enableDB, EnableWebServer = enableWebServer}.ToString());
@@ -131,7 +131,7 @@ namespace PowerServer
                     case 5:
                         return;
                 }
-                application.Clear(4);
+                tools.Clear(4);
             }
         }
     }
