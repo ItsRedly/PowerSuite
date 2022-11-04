@@ -5,18 +5,6 @@ namespace PowerExtensions
 {
     public class ConsoleTools : TextWriter
     {
-        [DllImport("kernel32.dll")]
-        static extern IntPtr GetConsoleWindow();
-
-        [DllImport("user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        [DllImport("user32.dll")]
-        public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
-
         private TextWriter stdOutWriter;
         private TextWriter Logs { get; set; }
         private List<string> Inputs = new();
@@ -28,13 +16,13 @@ namespace PowerExtensions
             this.stdOutWriter = Console.Out;
             Console.SetOut(this);
             Logs = new StringWriter();
-            DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), 0xF030, 0x00000000);
-            DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), 0xF000, 0x00000000);
+            WinAPI.DeleteMenu(WinAPI.GetSystemMenu(WinAPI.GetConsoleWindow(), false), 0xF030, 0x00000000);
+            WinAPI.DeleteMenu(WinAPI.GetSystemMenu(WinAPI.GetConsoleWindow(), false), 0xF000, 0x00000000);
         }
 
-        public void Hide() { ShowWindow(GetConsoleWindow(), 0); }
+        public void Hide() { WinAPI.ShowWindow(WinAPI.GetConsoleWindow(), ShowWindowCommands.Hide); }
 
-        public void Show() { ShowWindow(GetConsoleWindow(), 5); }
+        public void Show() { WinAPI.ShowWindow(WinAPI.GetConsoleWindow(), ShowWindowCommands.Normal); }
 
         public void Write(string str)
         {
