@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PowerExtensions\PowerExtensions.csproj" />
+    <ProjectReference Include="..\PowerAPI\PowerAPI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

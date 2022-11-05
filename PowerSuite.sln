@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PowerExtensions", "PowerExtensions\PowerExtensions.csproj", "{38C04031-EA73-42E1-A188-BCD29D89E73D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PowerAPI", "PowerAPI\PowerAPI.csproj", "{38C04031-EA73-42E1-A188-BCD29D89E73D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PowerServer", "PowerServer\PowerServer.csproj", "{1CAA848C-3DBB-42BB-9DAC-E89DCBBC575C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PowerSharp", "PowerSharp\PowerSharp.csproj", "{02C70558-78A9-47D2-B6E7-DAA759433613}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
