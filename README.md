@@ -54,6 +54,7 @@ There are many great Windows replacements available on GitHub and on other platf
 
 Here's why:
 * You shouldn't be using the bad Windows UI
+* You shoudn't be taking hours of your time to create a simple program
 * You should implement DRY principles to the rest of your life :smile:
 
 ### Built With
