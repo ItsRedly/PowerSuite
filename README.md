@@ -17,7 +17,7 @@
   <p align="center">
     A shitty replacement to Windows!
     <br />
-    To report a bug/ask for a feature/ask for a pull request use a ticket on the discord server
+    To report a bug/ask for a feature/ask for a pull request please use a ticket on the discord server
     <br />
   </p>
 </div>
