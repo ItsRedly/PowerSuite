@@ -21,7 +21,7 @@ namespace PowerServer
                 return;
             }
             tools.Header("PowerServer", "Version 1.0");
-            ServerSettings settings = File.Exists(args[0]) ? ServerSettings.FromFile(args[0]) : new();
+            ServerSettings settings = args.Length > 0 && File.Exists(args[0]) ? ServerSettings.FromFile(args[0]) : new();
             if (!Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users"))) { Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users")); }
             if (!Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website"))) { Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website")); }
             webServer = new HttpServer(80, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website"));
