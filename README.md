@@ -15,16 +15,10 @@
   <h3 align="center">PowerSuite</h3>
 
   <p align="center">
-    An shitty replacment to Windows!
+    A shitty replacement to Windows!
     <br />
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
   </p>
 </div>
-
-
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -57,7 +51,7 @@
 
 [![Product Name Screen Shot][product-screenshot]]
 
-There are many great Winndows replacments available on GitHub and on other platforms; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a Windows replacment so amazing that it'll be the last one you ever need -- And I think this is it.
+There are many great Windows replacements available on GitHub and on other platforms; however, I didn't find one that really suited my needs. So I created this enhanced one. I want to create a Windows replacement so amazing that it'll be the last one you ever need - And I think this is it.
 
 Here's why:
 * You shouldn't be using the bad Windows UI
@@ -137,16 +131,16 @@ Project Link: [https://github.com/DoorsDev/PowerSuite](https://github.com/DoorsD
 * [Font Awesome](https://fontawesome.com)
 * [React Icons](https://react-icons.github.io/react-icons/search)
 
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/DoorsDev/PowerSuite.svg?style=for-the-badge
+[contributors-url]: https://github.com/DoorsDev/PowerSuite/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/DoorsDev/PowerSuite.svg?style=for-the-badge
+[forks-url]: https://github.com/DoorsDev/PowerSuite/network/members
+[stars-shield]: https://img.shields.io/github/stars/DoorsDev/PowerSuite.svg?style=for-the-badge
+[stars-url]: https://github.com/DoorsDev/PowerSuite/stargazers
+[issues-shield]: https://img.shields.io/github/issues/DoorsDev/PowerSuite.svg?style=for-the-badge
+[issues-url]: https://github.com/DoorsDev/PowerSuite/issues
+[license-shield]: https://img.shields.io/github/license/DoorsDev/PowerSuite.svg?style=for-the-badge
+[license-url]: https://github.com/DoorsDev/PowerSuite/blob/master/LICENSE.txt
 [product-screenshot]: images/screenshot.png
 [DISCORD-IMG]: https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white
 [DISCORD-URL]: https://discord.gg/rJ89nMjMGJ
