@@ -44,11 +44,8 @@
   </ol>
 </details>
 
-
-
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
 ![Product Name Screen Shot][product-screenshot]
 
 There are many great Windows replacements available on GitHub and on other platforms; however, I didn't find one that really suited my needs. So I created this enhanced one. I want to create a Windows replacement so amazing that it'll be the last one you ever need - And I think this is it.
