@@ -77,7 +77,7 @@ Of course, no one template will serve all projects since your needs may be diffe
 
 This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 
-* [![C#][C#-IMG]][C#-URL]
+[![C#][C#-IMG]][C#-URL]
 
 <!-- GETTING STARTED -->
 ## Getting Started
