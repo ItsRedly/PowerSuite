@@ -15,11 +15,8 @@
   <h3 align="center">PowerSuite</h3>
 
   <p align="center">
-    An shitty replacment to Windows!
+    An shitty replacement to Windows!
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
-    <br />
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
   </p>
 </div>
 
