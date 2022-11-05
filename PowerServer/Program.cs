@@ -8,7 +8,7 @@ namespace PowerServer
 {
     public static class Program
     {
-        static HttpServer webServer;f
+        static HttpServer webServer;
         static ConsoleTools tools;
         [STAThread]
         public static void Main(string[] args)
