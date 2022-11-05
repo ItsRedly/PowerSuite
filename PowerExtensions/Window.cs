@@ -7,7 +7,7 @@ namespace PowerExtensions
     {
         IntPtr hwnd;
         public List<Control> Controls = new List<Control>();
-        public Point StartLocation = new(50, 50);
+        public Point Location = new(50, 50);
         public Size Size = new(500, 500);
         public string Title = "Untitled window";
         public bool Running = false;
@@ -38,7 +38,7 @@ namespace PowerExtensions
             hwnd = WinAPI.CreateWindowEx2(0, regRest, title, WindowStyles.WS_OVERLAPPEDWINDOW, -1, -1, -1, -1, IntPtr.Zero, IntPtr.Zero, hInstance, IntPtr.Zero);
         }
 
-        public Window(Point startLoc, string title = "Untitled window") : this(title) { StartLocation = startLoc; }
+        public Window(Point startLoc, string title = "Untitled window") : this(title) { Location = startLoc; }
 
         public IntPtr HandleMessage(WM message, IntPtr hWnd)
         {
@@ -65,7 +65,7 @@ namespace PowerExtensions
             WinAPI.ShowWindow(hwnd, ShowWindowCommands.Normal);
             WinAPI.UpdateWindow(hwnd);
             WinAPI.UpdateWindow(hwnd);
-            WinAPI.SetWindowPos(hwnd, new IntPtr(0), StartLocation.X, StartLocation.Y, Size.Width, Size.Height, 0);
+            WinAPI.SetWindowPos(hwnd, new IntPtr(0), Location.X, Location.Y, Size.Width, Size.Height, 0);
             MSG msg;
             while (WinAPI.GetMessage(out msg, IntPtr.Zero, 0, 0) != 0 && Running)
             {
