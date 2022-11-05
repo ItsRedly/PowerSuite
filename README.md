@@ -3,8 +3,7 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![Discord][DISCORD-URL]]
-//[![Discord][DISCORD-IMG]][DISCORD-URL]
+[![Discord][DISCORD-IMG]][DISCORD-URL]
 
 <!-- PROJECT LOGO -->
 <br />
@@ -185,7 +184,7 @@ Use this space to list resources you find helpful and would like to give credit 
 [license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
 [license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
 [product-screenshot]: images/screenshot.png
-[DISCORD-IMG]: https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)
+[DISCORD-IMG]: https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white
 [DISCORD-URL]: https://discord.gg/rJ89nMjMGJ
 [C#-IMG]: https://img.shields.io/badge/c%23-%23239120.svg?style=for-the-badge&logo=c-sharp&logoColor=white
 [C#-URL]: https://dotnet.microsoft.com/en-us/download/dotnet/6.0
