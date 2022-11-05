@@ -16,7 +16,8 @@
 
   <p align="center">
     A shitty replacement to Windows!
-    *To create issues use a ticket on the discord server*
+    <br />
+    To report a bug/ask for a feature/ask for a pull request use a ticket on the discord server
     <br />
   </p>
 </div>
