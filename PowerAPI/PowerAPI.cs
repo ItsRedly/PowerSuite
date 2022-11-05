@@ -11,7 +11,7 @@ using System.Text;
 
 namespace PowerAPI
 {
-    public static class PowerAPI
+    public static class API
     {
         [DllImport("user32.dll")]
         public static extern IntPtr DispatchMessage([In] ref Msg lpmsg);
@@ -60,7 +60,7 @@ namespace PowerAPI
         public static extern IntPtr GetStockObject(StockObjects fnObject);
 
         [DllImport("user32.dll")]
-        public static extern MessageBoxResult MessageBox(IntPtr hWnd, string text, string caption, int options);
+        public static extern MessageBoxResult MessageBox(IntPtr hWnd, string text, string caption, MessageBoxOptions options);
 
         [DllImport("user32.dll")]
         public static extern bool UpdateWindow(IntPtr hWnd);
@@ -598,6 +598,13 @@ namespace PowerAPI
         SYSTIMER = 0x118
     }
 
+    public enum MouseButton
+    {
+        Left,
+        Right,
+        Middle
+    }
+
     public static class Compression
     {
         public static void ExtractZipFile(string archivePath, string outFolder, string password = "")
@@ -623,9 +630,9 @@ namespace PowerAPI
 
     public class ConsoleTools : TextWriter
     {
-        private TextWriter stdOutWriter;
-        private TextWriter Logs { get; set; }
-        private List<string> Inputs = new();
+        TextWriter stdOutWriter;
+        TextWriter Logs { get; set; }
+        List<string> Inputs = new();
         public override Encoding Encoding { get { return Encoding.ASCII; } }
 
         public ConsoleTools(string appTitle = "Console Application")
@@ -634,13 +641,13 @@ namespace PowerAPI
             this.stdOutWriter = Console.Out;
             Console.SetOut(this);
             Logs = new StringWriter();
-            PowerAPI.DeleteMenu(PowerAPI.GetSystemMenu(PowerAPI.GetConsoleWindow(), false), 0xF030, 0x00000000);
-            PowerAPI.DeleteMenu(PowerAPI.GetSystemMenu(PowerAPI.GetConsoleWindow(), false), 0xF000, 0x00000000);
+            API.DeleteMenu(API.GetSystemMenu(API.GetConsoleWindow(), false), 0xF030, 0x00000000);
+            API.DeleteMenu(API.GetSystemMenu(API.GetConsoleWindow(), false), 0xF000, 0x00000000);
         }
 
-        public void Hide() { PowerAPI.ShowWindow(PowerAPI.GetConsoleWindow(), ShowWindowCommands.Hide); }
+        public void Hide() { API.ShowWindow(API.GetConsoleWindow(), ShowWindowCommands.Hide); }
 
-        public void Show() { PowerAPI.ShowWindow(PowerAPI.GetConsoleWindow(), ShowWindowCommands.Normal); }
+        public void Show() { API.ShowWindow(API.GetConsoleWindow(), ShowWindowCommands.Normal); }
 
         public void Write(string str)
         {
@@ -829,19 +836,19 @@ namespace PowerAPI
                 try
                 {
                     IntPtr result = HandleMessage((MessageType)message, hWnd, wParam, lParam);
-                    return result == new IntPtr(-1) ? PowerAPI.DefWindowProc(hWnd, (MessageType)message, wParam, lParam) : result;
+                    return result == new IntPtr(-1) ? API.DefWindowProc(hWnd, (MessageType)message, wParam, lParam) : result;
                 }
-                catch { return PowerAPI.DefWindowProc(hWnd, (MessageType)message, wParam, lParam); }
+                catch { return API.DefWindowProc(hWnd, (MessageType)message, wParam, lParam); }
             }));
             wndClass.cbClsExtra = 0;
             wndClass.cbWndExtra = 0;
             wndClass.hInstance = hInstance;
-            wndClass.hCursor = PowerAPI.LoadCursor(IntPtr.Zero, (int)Win32IDCConstants.IDC_ARROW);
-            wndClass.hbrBackground = PowerAPI.GetStockObject(StockObjects.WHITE_BRUSH);
+            wndClass.hCursor = API.LoadCursor(IntPtr.Zero, (int)Win32IDCConstants.IDC_ARROW);
+            wndClass.hbrBackground = API.GetStockObject(StockObjects.WHITE_BRUSH);
             wndClass.lpszMenuName = null;
             wndClass.lpszClassName = Title;
-            UInt16 regRest = PowerAPI.RegisterClassEx2(ref wndClass);
-            hwnd = PowerAPI.CreateWindowEx2(0, regRest, title, WindowStyles.WS_OVERLAPPEDWINDOW, -1, -1, -1, -1, IntPtr.Zero, IntPtr.Zero, hInstance, IntPtr.Zero);
+            UInt16 regRest = API.RegisterClassEx2(ref wndClass);
+            hwnd = API.CreateWindowEx2(0, regRest, title, WindowStyles.WS_OVERLAPPEDWINDOW, -1, -1, -1, -1, IntPtr.Zero, IntPtr.Zero, hInstance, IntPtr.Zero);
         }
 
         public Window(Point startLoc, string title = "Untitled window") : this(title) { Location = startLoc; }
@@ -851,12 +858,12 @@ namespace PowerAPI
             switch (message)
             {
                 case MessageType.PAINT:
-                    IntPtr hdc = PowerAPI.BeginPaint(hWnd, out PaintStruct ps);
+                    IntPtr hdc = API.BeginPaint(hWnd, out PaintStruct ps);
                     Controls.ForEach((Control control) =>
                     {
                         if (control.IsEnabled) { control.Draw(hWnd, hdc); }
                     });
-                    PowerAPI.EndPaint(hWnd, ref ps);
+                    API.EndPaint(hWnd, ref ps);
                     return IntPtr.Zero;
                 case MessageType.KEYUP:
                     Console.WriteLine("KEY PRESSED! " + (char)wParam);
@@ -865,16 +872,22 @@ namespace PowerAPI
                     Console.WriteLine("KEY PRESSED! " + (char)wParam);
                     return IntPtr.Zero;
                 case MessageType.LBUTTONUP:
-                    Console.WriteLine("LEFT BUTTON CLICKED! " + PowerAPI.GetPointFromInt(lParam).X + ", " + PowerAPI.GetPointFromInt(lParam).Y);
+                    Controls.ForEach((Control control) => {
+                        if (new Rectangle(control.Location, control.Size).IntersectsWith(new Rectangle(API.GetPointFromInt(lParam), new Size(1, 1))) && control.Clicked != null) { control.Clicked.Invoke(MouseButton.Left); }
+                    });
                     return IntPtr.Zero;
                 case MessageType.RBUTTONUP:
-                    Console.WriteLine("RIGHT BUTTON CLICKED! " + PowerAPI.GetPointFromInt(lParam).X + ", " + PowerAPI.GetPointFromInt(lParam).Y);
+                    Controls.ForEach((Control control) => {
+                        if (new Rectangle(control.Location, control.Size).IntersectsWith(new Rectangle(API.GetPointFromInt(lParam), new Size(1, 1))) && control.Clicked != null) { control.Clicked.Invoke(MouseButton.Right); }
+                    });
                     return IntPtr.Zero;
                 case MessageType.MBUTTONUP:
-                    Console.WriteLine("MIDDLE BUTTON CLICKED! " + PowerAPI.GetPointFromInt(lParam).X + ", " + PowerAPI.GetPointFromInt(lParam).Y);
+                    Controls.ForEach((Control control) => {
+                        if (new Rectangle(control.Location, control.Size).IntersectsWith(new Rectangle(API.GetPointFromInt(lParam), new Size(1, 1))) && control.Clicked != null) { control.Clicked.Invoke(MouseButton.Middle); }
+                    });
                     return IntPtr.Zero;
                 case MessageType.DESTROY:
-                    PowerAPI.PostQuitMessage(0);
+                    API.PostQuitMessage(0);
                     return IntPtr.Zero;
             }
             return new IntPtr(-1);
@@ -883,27 +896,29 @@ namespace PowerAPI
         public void Show()
         {
             Running = true;
-            PowerAPI.ShowWindow(hwnd, ShowWindowCommands.Normal);
-            PowerAPI.UpdateWindow(hwnd);
-            PowerAPI.UpdateWindow(hwnd);
-            PowerAPI.SetWindowPos(hwnd, new IntPtr(0), Location.X, Location.Y, Size.Width, Size.Height, 0);
-            while (PowerAPI.GetMessage(out Msg msg, IntPtr.Zero, 0, 0) != 0 && Running)
+            API.ShowWindow(hwnd, ShowWindowCommands.Normal);
+            API.UpdateWindow(hwnd);
+            API.UpdateWindow(hwnd);
+            API.SetWindowPos(hwnd, new IntPtr(0), Location.X, Location.Y, Size.Width, Size.Height, 0);
+            while (API.GetMessage(out Msg msg, IntPtr.Zero, 0, 0) != 0)
             {
-                PowerAPI.SetWindowText(hwnd, Title);
-                PowerAPI.TranslateMessage(ref msg);
-                PowerAPI.DispatchMessage(ref msg);
+                if (!Running) { API.PostQuitMessage(0); }
+                API.SetWindowText(hwnd, Title);
+                API.TranslateMessage(ref msg);
+                API.DispatchMessage(ref msg);
             }
         }
 
-        public void Close()
-        {
-            Running = false;
-            PowerAPI.CloseWindow(hwnd);
-        }
+        public void Hide() { API.ShowWindow(hwnd, ShowWindowCommands.Hide); }
+
+        public void Close() { Running = false; }
     }
+
+    public delegate void ClickEvent(MouseButton button);
 
     public abstract class Control
     {
+        public ClickEvent Clicked;
         public string Name;
         public string Text;
         public Point Location = new Point(0, 0);
@@ -920,13 +935,13 @@ namespace PowerAPI
         public TextControl(string text = "TextControl") { Text = text; }
         public override void Draw(IntPtr hWnd, IntPtr hdc)
         {
-            PowerAPI.GetClientRect(hWnd, out Rectangle rect);
+            API.GetClientRect(hWnd, out Rectangle rect);
             uint drawArgs = Win32DTConstant.DT_SINGLELINE;
             if (IsHCentered) { drawArgs |= Win32DTConstant.DT_CENTER; }
             else { rect.X = Location.X; }
             if (IsVCentered) { drawArgs |= Win32DTConstant.DT_VCENTER; }
             else { rect.Y = Location.Y; }
-            PowerAPI.DrawText(hdc, Text, -1, ref rect, drawArgs);
+            API.DrawText(hdc, Text, -1, ref rect, drawArgs);
         }
     }
 
