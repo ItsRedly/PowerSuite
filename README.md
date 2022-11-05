@@ -131,7 +131,7 @@ Project Link: [https://github.com/DoorsDev/PowerSuite](https://github.com/DoorsD
 * [Font Awesome](https://fontawesome.com)
 * [React Icons](https://react-icons.github.io/react-icons/search)
 
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/DoorsDev/PowerSuite.svg?style=for-the-badge
 [contributors-url]: https://github.com/DoorsDev/PowerSuite/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/DoorsDev/PowerSuite.svg?style=for-the-badge
 [forks-url]: https://github.com/DoorsDev/PowerSuite/network/members
