@@ -13,9 +13,6 @@ namespace PowerServer
         [STAThread]
         public static void Main(string[] args)
         {
-            Window window = new("LOL");
-            window.Controls.Add(new TextControl() { Text = "oi" });
-            window.Show();
             tools = new("PowerServer");
             if (args.Length > 1 || args.Length == 1 && args[0] == "/help")
             {
