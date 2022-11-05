@@ -16,6 +16,7 @@
 
   <p align="center">
     A shitty replacement to Windows!
+    *To create issues use a ticket on the discord server*
     <br />
   </p>
 </div>
