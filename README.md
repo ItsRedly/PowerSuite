@@ -9,7 +9,7 @@
 <br />
 <div align="center">
   <a href="[https://github.com/DoorsDev/PowerSuite">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="Images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">PowerSuite</h3>
@@ -141,7 +141,7 @@ Project Link: [https://github.com/DoorsDev/PowerSuite](https://github.com/DoorsD
 [issues-url]: https://github.com/DoorsDev/PowerSuite/issues
 [license-shield]: https://img.shields.io/github/license/DoorsDev/PowerSuite.svg?style=for-the-badge
 [license-url]: https://github.com/DoorsDev/PowerSuite/blob/master/LICENSE.txt
-[product-screenshot]: images/screenshot.png
+[product-screenshot]: Images/screenshot.png
 [DISCORD-IMG]: https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white
 [DISCORD-URL]: https://discord.gg/rJ89nMjMGJ
 [C#-IMG]: https://img.shields.io/badge/c%23-%23239120.svg?style=for-the-badge&logo=c-sharp&logoColor=white
