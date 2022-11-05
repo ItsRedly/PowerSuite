@@ -13,6 +13,7 @@ namespace PowerAPI
 {
     public static class API
     {
+        #region C++ calls
         [DllImport("user32.dll")]
         public static extern IntPtr DispatchMessage([In] ref Msg lpmsg);
         [DllImport("user32.dll")]
@@ -28,7 +29,7 @@ namespace PowerAPI
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool ShowWindow(IntPtr hWnd, ShowWindowCommands nCmdShow);
+        public static extern bool ShowWindow(IntPtr hWnd, ShowWindowType nCmdShow);
         [DllImport("user32.dll")]
         public static extern bool CloseWindow(IntPtr hWnd);
 
@@ -85,7 +86,9 @@ namespace PowerAPI
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+        #endregion
 
+        #region Other methods
         public static Point GetPointFromInt(IntPtr value)
         {
             uint xy = unchecked(IntPtr.Size == 8 ? (uint)value.ToInt64() : (uint)value.ToInt32());
@@ -93,8 +96,10 @@ namespace PowerAPI
             int y = unchecked((short)(xy >> 16));
             return new(x, y);
         }
+        #endregion
     }
 
+    #region Constants
     public static class Win32DTConstant
     {
         public const int DT_TOP = 0x00000000;
@@ -114,6 +119,28 @@ namespace PowerAPI
         public const int DT_INTERNAL = 0x00001000;
     }
 
+    public static class Win32IDCConstants
+    {
+        public const int IDC_ARROW = 32512;
+        public const int IDC_IBEAM = 32513;
+        public const int IDC_WAIT = 32514;
+        public const int IDC_CROSS = 32515;
+        public const int IDC_UPARROW = 32516;
+        public const int IDC_SIZE = 32640;
+        public const int IDC_ICON = 32641;
+        public const int IDC_SIZENWSE = 32642;
+        public const int IDC_SIZENESW = 32643;
+        public const int IDC_SIZEWE = 32644;
+        public const int IDC_SIZENS = 32645;
+        public const int IDC_SIZEALL = 32646;
+        public const int IDC_NO = 32648;
+        public const int IDC_HAND = 32649;
+        public const int IDC_APPSTARTING = 32650;
+        public const int IDC_HELP = 32651;
+    }
+    #endregion
+
+    #region Stock Objects
     public enum StockObjects
     {
         WHITE_BRUSH = 0,
@@ -137,27 +164,9 @@ namespace PowerAPI
         DC_BRUSH = 18,
         DC_PEN = 19,
     }
+    #endregion
 
-    public static class Win32IDCConstants
-    {
-        public const int IDC_ARROW = 32512;
-        public const int IDC_IBEAM = 32513;
-        public const int IDC_WAIT = 32514;
-        public const int IDC_CROSS = 32515;
-        public const int IDC_UPARROW = 32516;
-        public const int IDC_SIZE = 32640;
-        public const int IDC_ICON = 32641;
-        public const int IDC_SIZENWSE = 32642;
-        public const int IDC_SIZENESW = 32643;
-        public const int IDC_SIZEWE = 32644;
-        public const int IDC_SIZENS = 32645;
-        public const int IDC_SIZEALL = 32646;
-        public const int IDC_NO = 32648;
-        public const int IDC_HAND = 32649;
-        public const int IDC_APPSTARTING = 32650;
-        public const int IDC_HELP = 32651;
-    }
-
+    #region Message Box
     [Flags]
     public enum MessageBoxOptions : uint
     {
@@ -192,7 +201,7 @@ namespace PowerAPI
         Right = 0x080000,
         RTLReading = 0x100000
     }
-
+    
     public enum MessageBoxResult : uint
     {
         Ok = 1,
@@ -208,8 +217,10 @@ namespace PowerAPI
         Continue,
         Timeout = 32000
     }
+    #endregion
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
+    #region Message
     public struct Msg
     {
         public IntPtr hwnd;
@@ -219,7 +230,9 @@ namespace PowerAPI
         public UInt32 time;
         public Rectangle pt;
     }
+    #endregion
 
+    #region Wnd Class
     public struct WndClass
     {
         public ClassStyles style;
@@ -239,6 +252,7 @@ namespace PowerAPI
 
     public delegate IntPtr WndProcDelegate(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
     public delegate IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     public struct WndClassEx
     {
@@ -257,8 +271,10 @@ namespace PowerAPI
         public string lpszClassName;
         public IntPtr hIconSm;
     }
+    #endregion
 
-    [Flags()]
+    #region Window Styles
+    [Flags]
     public enum WindowStyles : uint
     {
         WS_BORDER = 0x800000,
@@ -315,8 +331,10 @@ namespace PowerAPI
         WS_EX_TRANSPARENT = 0x00000020,
         WS_EX_WINDOWEDGE = 0x00000100
     }
+    #endregion
 
-    public enum ShowWindowCommands : int
+    #region Show Window Type
+    public enum ShowWindowType : int
     {
         Hide = 0,
         Normal = 1,
@@ -332,7 +350,9 @@ namespace PowerAPI
         ShowDefault = 10,
         ForceMinimize = 11
     }
+    #endregion
 
+    #region Class Styles
     public enum ClassStyles : uint
     {
         ByteAlignClient = 0x1000,
@@ -348,7 +368,9 @@ namespace PowerAPI
         SaveBits = 0x800,
         VerticalRedraw = 0x1
     }
+    #endregion
 
+    #region Class Styles
     [StructLayout(LayoutKind.Sequential)]
     public struct PaintStruct
     {
@@ -360,7 +382,9 @@ namespace PowerAPI
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
         public byte[] rgbReserved;
     }
+    #endregion
 
+    #region Message Type
     public enum MessageType : uint
     {
         NULL = 0x0000,
@@ -597,14 +621,18 @@ namespace PowerAPI
         CPL_LAUNCHED = USER + 0x1001,
         SYSTIMER = 0x118
     }
+    #endregion
 
+    #region Mouse Button
     public enum MouseButton
     {
         Left,
         Right,
         Middle
     }
+    #endregion
 
+    #region Compression
     public static class Compression
     {
         public static void ExtractZipFile(string archivePath, string outFolder, string password = "")
@@ -627,7 +655,9 @@ namespace PowerAPI
             }
         }
     }
+    #endregion
 
+    #region Console Tools
     public class ConsoleTools : TextWriter
     {
         TextWriter stdOutWriter;
@@ -645,9 +675,9 @@ namespace PowerAPI
             API.DeleteMenu(API.GetSystemMenu(API.GetConsoleWindow(), false), 0xF000, 0x00000000);
         }
 
-        public void Hide() { API.ShowWindow(API.GetConsoleWindow(), ShowWindowCommands.Hide); }
+        public void Hide() { API.ShowWindow(API.GetConsoleWindow(), ShowWindowType.Hide); }
 
-        public void Show() { API.ShowWindow(API.GetConsoleWindow(), ShowWindowCommands.Normal); }
+        public void Show() { API.ShowWindow(API.GetConsoleWindow(), ShowWindowType.Normal); }
 
         public void Write(string str)
         {
@@ -815,7 +845,9 @@ namespace PowerAPI
             }
         }
     }
+    #endregion
 
+    #region GUI Stuff
     public class MessageBox
     {
         public MessageBoxOptions Options;
@@ -913,7 +945,7 @@ namespace PowerAPI
         public void Show()
         {
             Running = true;
-            API.ShowWindow(hwnd, ShowWindowCommands.Normal);
+            API.ShowWindow(hwnd, ShowWindowType.Normal);
             API.UpdateWindow(hwnd);
             API.UpdateWindow(hwnd);
             API.SetWindowPos(hwnd, IntPtr.Zero, Location.X, Location.Y, Size.Width, Size.Height, 0);
@@ -927,7 +959,7 @@ namespace PowerAPI
             }
         }
 
-        public void Hide() { API.ShowWindow(hwnd, ShowWindowCommands.Hide); }
+        public void Hide() { API.ShowWindow(hwnd, ShowWindowType.Hide); }
 
         public void Close() { Running = false; }
     }
@@ -962,7 +994,9 @@ namespace PowerAPI
             API.DrawText(hdc, Text, -1, ref rect, drawArgs);
         }
     }
+    #endregion
 
+    #region Extensions
     public static class ImageExtensions
     {
         public static Image ConvertBase64ToImage(this string base64string)
@@ -984,6 +1018,9 @@ namespace PowerAPI
             }
         }
     }
+    #endregion
+
+    #region HTTP Server
 
     public delegate string PostRequestHandle(string request, string requestUrl);
     public class HttpServer
@@ -1081,7 +1118,9 @@ namespace PowerAPI
             }
         }
     }
+    #endregion
 
+    #region PowerDB Stuff
     public class User
     {
         public string Username;
@@ -1125,4 +1164,5 @@ namespace PowerAPI
         public static void RunFile(string file) { RunString(File.ReadAllText(file)); }
         public static void RunString(string str) { CSharpScript.RunAsync(str, ScriptOptions.Default.AddReferences(MetadataReference.CreateFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PowerAPI.dll")))); }
     }
+    #endregion
 }
