@@ -3,7 +3,7 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![Discord][DISCORD-IMG]][DISCORD-URL]
+[![Discord][DISCORD-IMG][DISCORD-URL]
 
 <!-- PROJECT LOGO -->
 <br />
