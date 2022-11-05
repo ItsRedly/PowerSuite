@@ -1122,6 +1122,6 @@ namespace PowerAPI
     public static class PowerSharp
     {
         public static void RunFile(string file) { RunString(File.ReadAllText(file)); }
-        public static void RunString(string str) { CSharpScript.RunAsync(str, ScriptOptions.Default.AddReferences(MetadataReference.CreateFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PowerExtensions.dll")))); }
+        public static void RunString(string str) { CSharpScript.RunAsync(str, ScriptOptions.Default.AddReferences(MetadataReference.CreateFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PowerAPI.dll")))); }
     }
 }
