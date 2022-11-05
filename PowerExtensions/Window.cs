@@ -47,9 +47,10 @@ namespace PowerExtensions
                 case WM.PAINT:
                     PAINTSTRUCT ps;
                     IntPtr hdc = WinAPI.BeginPaint(hWnd, out ps);
-                    foreach (Control control in Controls) {
+                    Controls.ForEach((Control control) =>
+                    {
                         if (control.IsEnabled) { control.Draw(hWnd, hdc); }
-                    }
+                    });
                     WinAPI.EndPaint(hWnd, ref ps);
                     return IntPtr.Zero;
                 case WM.DESTROY:
