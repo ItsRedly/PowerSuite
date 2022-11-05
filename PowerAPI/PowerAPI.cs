@@ -816,6 +816,23 @@ namespace PowerAPI
         }
     }
 
+    public class MessageBox
+    {
+        public MessageBoxOptions Options;
+        public string Text;
+        public string Title;
+        public MessageBoxResult Result;
+
+        public MessageBox(string text = "", string title = "MessageBox", MessageBoxOptions options = MessageBoxOptions.OkOnly)
+        {
+            Text = text;
+            Title = title;
+            Options = options;
+        }
+
+        public void Show() { Result = API.MessageBox(IntPtr.Zero, Text, Title, Options); }
+    }
+
     public class Window
     {
         IntPtr hwnd;

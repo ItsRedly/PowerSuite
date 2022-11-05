@@ -21,7 +21,68 @@ namespace PowerServer
                 return;
             }
             tools.Header("PowerServer", "Version 1.0");
-            RunRoutine(args.Length > 0 && File.Exists(args[0]) ? ServerSettings.FromFile(args[0]) : new ServerSettings());
+            ServerSettings settings = File.Exists(args[0]) ? ServerSettings.FromFile(args[0]) : new();
+            if (!Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users"))) { Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users")); }
+            if (!Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website"))) { Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website")); }
+            webServer = new HttpServer(80, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website"));
+            if (settings.EnableDB) { webServer.PostRequestHandle += DBPostRequestHandler; }
+            if (settings.EnableWebServer) { webServer.Start(); }
+
+            while (true)
+            {
+                switch (tools.Select(new string[] { (settings.EnableDB ? "Disable" : "Enable") + " PowerDB", (settings.EnableWebServer ? "Disable" : "Enable") + " PowerWeb", "Run PowerSend", "Save config file", "Exit" }))
+                {
+                    case 1:
+                        settings.EnableDB = !settings.EnableDB;
+                        if (settings.EnableDB) { webServer.PostRequestHandle += DBPostRequestHandler; }
+                        else { webServer.PostRequestHandle -= DBPostRequestHandler; }
+                        break;
+
+                    case 2:
+                        settings.EnableWebServer = !settings.EnableWebServer;
+                        if (settings.EnableWebServer) { webServer.Start(); }
+                        else { webServer.Stop(); }
+                        break;
+
+                    case 3:
+                        string email = tools.Prompt("What is the email address that is going to be used?");
+                        string displayName = tools.Prompt("What is the email display name that is going to be used?");
+                        string password = tools.Prompt("What is the application key for that email address?");
+                        string header = tools.Prompt("What is the email header going to be?");
+                        string content = tools.Prompt(@"What is the email content going to be (use \n for newlines)?").Replace(@"\n", "\n");
+                        SmtpClient smtp = new SmtpClient() { Host = "smtp.gmail.com", Port = 587, EnableSsl = true, DeliveryMethod = SmtpDeliveryMethod.Network, UseDefaultCredentials = false, Credentials = new NetworkCredential(email, password) };
+                        foreach (string file in Directory.GetFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users")))
+                        {
+                            using (MailMessage message = new MailMessage(new MailAddress(email, displayName), new MailAddress(User.FromFile(file).Email)) { Subject = header, Body = content }) { smtp.Send(message); }
+                        }
+                        break;
+
+                    case 4:
+                        bool enableDB = false;
+                        bool enableWebServer = false;
+                        string fileName = tools.Prompt("What filename do you want to export it to?");
+                        fileName = fileName == "" ? "settings" : fileName;
+                        string enableDBPrompt = tools.Prompt("Would you like to run PowerDB?");
+                        while (!new string[] { "Yes", "Y", "yes", "y", "No", "N", "no", "n" }.Contains(enableDBPrompt))
+                        {
+                            tools.WriteLine("Invalid anwser. Valid anwsers are: Yes, Y, yes, y, No, N, no, n", ConsoleColor.Red);
+                            enableDBPrompt = tools.Prompt("Would you like to run PowerDB?");
+                        }
+                        enableDB = new string[] { "Yes", "Y", "yes", "y" }.Contains(enableDBPrompt);
+                        string enableWebServerPrompt = tools.Prompt("Would you like to run PowerWeb?");
+                        while (!new string[] { "Yes", "Y", "yes", "y", "No", "N", "no", "n" }.Contains(enableWebServerPrompt))
+                        {
+                            tools.WriteLine("Invalid anwser. Valid anwsers are: Yes, Y, yes, y, No, N, no, n", ConsoleColor.Red);
+                            enableWebServerPrompt = tools.Prompt("Would you like to run PowerWeb?");
+                        }
+                        enableWebServer = new string[] { "Yes", "Y", "yes", "y" }.Contains(enableDBPrompt);
+                        File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName + ".json"), new ServerSettings() { EnableDB = enableDB, EnableWebServer = enableWebServer }.ToString());
+                        break;
+                    case 5:
+                        return;
+                }
+                tools.Clear(4);
+            }
         }
 
         static string DBPostRequestHandler(string request, string requestUrl)
@@ -68,70 +129,6 @@ namespace PowerServer
 
                 default:
                     return "";
-            }
-        }
-
-        static void RunRoutine(ServerSettings settings)
-        {
-            if (!Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users"))) { Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users")); }
-            if (!Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website"))) { Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website")); }
-            webServer = new HttpServer(80, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website"));
-            if (settings.EnableDB) { webServer.PostRequestHandle += DBPostRequestHandler; }
-            if (settings.EnableWebServer) { webServer.Start(); }
-
-            while (true)
-            {
-                switch (tools.Select(new string[] { (settings.EnableDB ? "Disable" : "Enable") + " PowerDB", (settings.EnableWebServer ? "Disable" : "Enable") + " PowerWeb", "Run PowerSend", "Save config file", "Exit" })) {
-                    case 1:
-                        settings.EnableDB = !settings.EnableDB;
-                        if (settings.EnableDB) { webServer.PostRequestHandle += DBPostRequestHandler; }
-                        else { webServer.PostRequestHandle -= DBPostRequestHandler; }
-                        break;
-
-                    case 2:
-                        settings.EnableWebServer = !settings.EnableWebServer;
-                        if (settings.EnableWebServer) { webServer.Start(); }
-                        else { webServer.Stop(); }
-                        break;
-
-                    case 3:
-                        string email = tools.Prompt("What is the email address that is going to be used?");
-                        string displayName = tools.Prompt("What is the email display name that is going to be used?");
-                        string password = tools.Prompt("What is the application key for that email address?");
-                        string header = tools.Prompt("What is the email header going to be?");
-                        string content = tools.Prompt(@"What is the email content going to be (use \n for newlines)?").Replace(@"\n", "\n");
-                        SmtpClient smtp = new SmtpClient() { Host = "smtp.gmail.com", Port = 587, EnableSsl = true, DeliveryMethod = SmtpDeliveryMethod.Network, UseDefaultCredentials = false, Credentials = new NetworkCredential(email, password) };
-                        foreach (string file in Directory.GetFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users")))
-                        {
-                            using (MailMessage message = new MailMessage(new MailAddress(email, displayName), new MailAddress(User.FromFile(file).Email)) { Subject = header, Body = content }) { smtp.Send(message); }
-                        }
-                        break;
-
-                    case 4:
-                        bool enableDB = false;
-                        bool enableWebServer = false;
-                        string fileName = tools.Prompt("What filename do you want to export it to?");
-                        fileName = fileName == "" ? "settings" : fileName;
-                        string enableDBPrompt = tools.Prompt("Would you like to run PowerDB?");
-                        while (!new string[] { "Yes", "Y", "yes", "y", "No", "N", "no", "n" }.Contains(enableDBPrompt))
-                        {
-                            tools.WriteLine("Invalid anwser. Valid anwsers are: Yes, Y, yes, y, No, N, no, n", ConsoleColor.Red);
-                            enableDBPrompt = tools.Prompt("Would you like to run PowerDB?");
-                        }
-                        enableDB = new string[] { "Yes", "Y", "yes", "y" }.Contains(enableDBPrompt);
-                        string enableWebServerPrompt = tools.Prompt("Would you like to run PowerWeb?");
-                        while (!new string[] { "Yes", "Y", "yes", "y", "No", "N", "no", "n" }.Contains(enableWebServerPrompt))
-                        {
-                            tools.WriteLine("Invalid anwser. Valid anwsers are: Yes, Y, yes, y, No, N, no, n", ConsoleColor.Red);
-                            enableWebServerPrompt = tools.Prompt("Would you like to run PowerWeb?");
-                        }
-                        enableWebServer = new string[] { "Yes", "Y", "yes", "y" }.Contains(enableDBPrompt);
-                        File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName + ".json"), new ServerSettings() { EnableDB = enableDB, EnableWebServer = enableWebServer}.ToString());
-                        break;
-                    case 5:
-                        return;
-                }
-                tools.Clear(4);
             }
         }
     }
