@@ -24,7 +24,7 @@ namespace PowerServer
             ServerSettings settings = args.Length > 0 && File.Exists(args[0]) ? ServerSettings.FromFile(args[0]) : new();
             if (!Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users"))) { Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users")); }
             if (!Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website"))) { Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website")); }
-            webServer = new HttpServer(80, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website"));
+            webServer = new(80, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website"));
             if (settings.EnableDB) { webServer.PostRequestHandle += DBPostRequestHandler; }
             if (settings.EnableWebServer) { webServer.Start(); }
 
@@ -53,7 +53,7 @@ namespace PowerServer
                         SmtpClient smtp = new SmtpClient() { Host = "smtp.gmail.com", Port = 587, EnableSsl = true, DeliveryMethod = SmtpDeliveryMethod.Network, UseDefaultCredentials = false, Credentials = new NetworkCredential(email, password) };
                         foreach (string file in Directory.GetFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users")))
                         {
-                            using (MailMessage message = new MailMessage(new MailAddress(email, displayName), new MailAddress(User.FromFile(file).Email)) { Subject = header, Body = content }) { smtp.Send(message); }
+                            using (MailMessage message = new(new(email, displayName), new MailAddress(User.FromFile(file).Email)) { Subject = header, Body = content }) { smtp.Send(message); }
                         }
                         break;
 

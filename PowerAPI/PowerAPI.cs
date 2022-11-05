@@ -91,7 +91,7 @@ namespace PowerAPI
             uint xy = unchecked(IntPtr.Size == 8 ? (uint)value.ToInt64() : (uint)value.ToInt32());
             int x = unchecked((short)xy);
             int y = unchecked((short)(xy >> 16));
-            return new Point(x, y);
+            return new(x, y);
         }
     }
 
@@ -836,7 +836,7 @@ namespace PowerAPI
     public class Window
     {
         IntPtr hwnd;
-        public List<Control> Controls = new List<Control>();
+        public List<Control> Controls = new();
         public Point Location = new(50, 50);
         public Size Size = new(500, 500);
         public string Title = "Untitled window";
@@ -846,7 +846,7 @@ namespace PowerAPI
         {
             Title = title;
             IntPtr hInstance = Process.GetCurrentProcess().Handle;
-            WndClassEx wndClass = new WndClassEx();
+            WndClassEx wndClass = new();
             wndClass.cbSize = Marshal.SizeOf(typeof(WndClassEx));
             wndClass.style = (int)(ClassStyles.HorizontalRedraw | ClassStyles.VerticalRedraw);
             wndClass.lpfnWndProc = Marshal.GetFunctionPointerForDelegate((WndProc)((hWnd, message, wParam, lParam) => {
@@ -890,24 +890,24 @@ namespace PowerAPI
                     return IntPtr.Zero;
                 case MessageType.LBUTTONUP:
                     Controls.ForEach((Control control) => {
-                        if (new Rectangle(control.Location, control.Size).IntersectsWith(new Rectangle(API.GetPointFromInt(lParam), new Size(1, 1))) && control.Clicked != null) { control.Clicked.Invoke(MouseButton.Left); }
+                        if (new Rectangle(control.Location, control.Size).IntersectsWith(new(API.GetPointFromInt(lParam), new(1, 1))) && control.Clicked != null) { control.Clicked.Invoke(MouseButton.Left); }
                     });
                     return IntPtr.Zero;
                 case MessageType.RBUTTONUP:
                     Controls.ForEach((Control control) => {
-                        if (new Rectangle(control.Location, control.Size).IntersectsWith(new Rectangle(API.GetPointFromInt(lParam), new Size(1, 1))) && control.Clicked != null) { control.Clicked.Invoke(MouseButton.Right); }
+                        if (new Rectangle(control.Location, control.Size).IntersectsWith(new(API.GetPointFromInt(lParam), new(1, 1))) && control.Clicked != null) { control.Clicked.Invoke(MouseButton.Right); }
                     });
                     return IntPtr.Zero;
                 case MessageType.MBUTTONUP:
                     Controls.ForEach((Control control) => {
-                        if (new Rectangle(control.Location, control.Size).IntersectsWith(new Rectangle(API.GetPointFromInt(lParam), new Size(1, 1))) && control.Clicked != null) { control.Clicked.Invoke(MouseButton.Middle); }
+                        if (new Rectangle(control.Location, control.Size).IntersectsWith(new(API.GetPointFromInt(lParam), new(1, 1))) && control.Clicked != null) { control.Clicked.Invoke(MouseButton.Middle); }
                     });
                     return IntPtr.Zero;
                 case MessageType.DESTROY:
                     API.PostQuitMessage(0);
                     return IntPtr.Zero;
             }
-            return new IntPtr(-1);
+            return new(-1);
         }
 
         public void Show()
@@ -916,7 +916,7 @@ namespace PowerAPI
             API.ShowWindow(hwnd, ShowWindowCommands.Normal);
             API.UpdateWindow(hwnd);
             API.UpdateWindow(hwnd);
-            API.SetWindowPos(hwnd, new IntPtr(0), Location.X, Location.Y, Size.Width, Size.Height, 0);
+            API.SetWindowPos(hwnd, IntPtr.Zero, Location.X, Location.Y, Size.Width, Size.Height, 0);
             while (API.GetMessage(out Msg msg, IntPtr.Zero, 0, 0) != 0)
             {
                 if (!Running) { API.PostQuitMessage(0); }
@@ -938,8 +938,8 @@ namespace PowerAPI
         public ClickEvent Clicked;
         public string Name;
         public string Text;
-        public Point Location = new Point(0, 0);
-        public Size Size = new Size(50, 50);
+        public Point Location = new(0, 0);
+        public Size Size = new(50, 50);
         public bool IsEnabled = true;
 
         public abstract void Draw(IntPtr hwnd, IntPtr hdc);
