@@ -15,7 +15,7 @@
   <h3 align="center">PowerSuite</h3>
 
   <p align="center">
-    An shitty replacement to Windows!
+    A shitty replacement to Windows!
     <br />
   </p>
 </div>
