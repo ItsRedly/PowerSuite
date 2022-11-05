@@ -917,8 +917,9 @@ namespace PowerAPI
             API.UpdateWindow(hwnd);
             API.UpdateWindow(hwnd);
             API.SetWindowPos(hwnd, IntPtr.Zero, Location.X, Location.Y, Size.Width, Size.Height, 0);
-            while (API.GetMessage(out Msg msg, IntPtr.Zero, 0, 0) != 0)
+            while (true)
             {
+                if (API.GetMessage(out Msg msg, IntPtr.Zero, 0, 0) == 0) { break; }
                 if (!Running) { API.PostQuitMessage(0); }
                 API.SetWindowText(hwnd, Title);
                 API.TranslateMessage(ref msg);
