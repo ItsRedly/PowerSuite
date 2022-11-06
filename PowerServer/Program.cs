@@ -13,6 +13,7 @@ namespace PowerServer
         [STAThread]
         public static void Main(string[] args) // Program entry point
         {
+            ApplicationExtensions.RelaunchIfNotAdmin(); // Relaunch app if not admin
             tools = new("PowerServer"); // Initializing the ConsoleTools
             if (args.Length > 1 || args.Length == 1 && args[0] == "/help") // Check if it has help/incorrect params
             {
@@ -22,9 +23,9 @@ namespace PowerServer
             }
             tools.Header("PowerServer", "Version 1.0"); // Show app header
             ServerSettings settings = args.Length > 0 && File.Exists(args[0]) ? ServerSettings.FromFile(args[0]) : new(); // Create new instance of ServerSettings class or load existing one
-            if (!Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users"))) { Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users")); } // Create Users directory if dosent exist
-            if (!Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website"))) { Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website")); } // Create Website directory if dosent exist
-            webServer = new(80, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Website")); // Initializing the HTTP server
+            if (!Directory.Exists(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users"))) { Directory.CreateDirectory(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users")); } // Create Users directory if dosent exist
+            if (!Directory.Exists(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Website"))) { Directory.CreateDirectory(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Website")); } // Create Website directory if dosent exist
+            webServer = new(80, Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Website")); // Initializing the HTTP server
             if (settings.EnableDB) { webServer.PostRequestHandle += DBPostRequestHandler; } // Enable DB case enabled on server settings
             if (settings.EnableWebServer) { webServer.Start(); } // Start HTTP server case enabled on server settings
 
@@ -51,7 +52,7 @@ namespace PowerServer
                         string header = tools.Prompt("What is the email header going to be?"); // Asks user "What is the email header going to be?"
                         string content = tools.Prompt(@"What is the email content going to be (use \n for newlines)?").Replace(@"\n", "\n"); // Asks user "What is the email content going to be (use \n for newlines)?"
                         SmtpClient smtp = new SmtpClient() { Host = "smtp.gmail.com", Port = 587, EnableSsl = true, DeliveryMethod = SmtpDeliveryMethod.Network, UseDefaultCredentials = false, Credentials = new NetworkCredential(email, password) }; //Creates an SMTP client with the data provided previously
-                        Directory.GetFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users")).ToList().ForEach((string file) => { // Get every user stored in the DB
+                        Directory.GetFiles(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users")).ToList().ForEach((string file) => { // Get every user stored in the DB
                             using (MailMessage message = new(new(email, displayName), new MailAddress(User.FromFile(file).Email)) { Subject = header, Body = content }) { smtp.Send(message); } // Send message provided previously to user
                         });
                         break; // Goto next iteration of loop
@@ -74,7 +75,7 @@ namespace PowerServer
                             enableWebServerPrompt = tools.Prompt("Would you like to run PowerWeb?"); // Asks user "Would you like to run PowerWeb?"
                         }
                         enableWebServer = new string[] { "Yes", "Y", "yes", "y" }.Contains(enableWebServerPrompt); // Set Enable HTTP server to "Yes", "Y", "yes" and "y" is contained on enable HTTP prompt anwser
-                        File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName + ".json"), new ServerSettings() { EnableDB = enableDB, EnableWebServer = enableWebServer }.ToString()); // Writes settings created previously to file with name also chosen previously
+                        File.WriteAllText(Path.Combine(ApplicationExtensions.GetApplicationLocation(), fileName + ".json"), new ServerSettings() { EnableDB = enableDB, EnableWebServer = enableWebServer }.ToString()); // Writes settings created previously to file with name also chosen previously
                         break; // Goto next iteration of loop
                     case 5: // Case exit app
                         return; // Exit app
@@ -89,36 +90,36 @@ namespace PowerServer
             switch (requestUrl) // Check request url
             {
                 case "SignIn": // If request url "SignIn"
-                    if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username))) // If the file Users/ + User's username dosent exist
+                    if (!File.Exists(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users", user.Username))) // If the file Users/ + User's username dosent exist
                     {
                         (string key, string token) encryption = Fernet.Encrypt(user.Password); // Encrypt user password into object
                         user.Password = encryption.token; // Set user's password to encrypted password's token
                         user.Key = encryption.key; // Set user's key to encrypted password's key
-                        File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username), user.ToString()); // Write the user to file file Users/ + User's username
-                        File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", "log.log"), "Created user with name " + user.Username + "!\n"); // Write to logs "Created user with name + User's username + !\n"
-                        return new User(User.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username))) { Key = null }.ToString(); // Return to http client the user created but without the key
+                        File.WriteAllText(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users", user.Username), user.ToString()); // Write the user to file file Users/ + User's username
+                        File.AppendAllText(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users", "log.log"), "Created user with name " + user.Username + "!\n"); // Write to logs "Created user with name + User's username + !\n"
+                        return new User(User.FromFile(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users", user.Username))) { Key = null }.ToString(); // Return to http client the user created but without the key
                     }
                     else // Else
                     {
-                        File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", "log.log"), "Declined creating user with name " + user.Username + " because a user with that name already exists...\n"); // Write to file Users/ + User's username "Declined creating user with name + User's username + because a user with that name already exists...\n"
+                        File.AppendAllText(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users", "log.log"), "Declined creating user with name " + user.Username + " because a user with that name already exists...\n"); // Write to file Users/ + User's username "Declined creating user with name + User's username + because a user with that name already exists...\n"
                         return "Already exists"; // Return to http client "Already exists"
                     }
 
                 case "LogIn":
-                    if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username)))
+                    if (!File.Exists(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users", user.Username)))
                     {
-                        File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", "log.log"), "Declined sending data for user " + user.Username + "because of user with that name not existing...\n");
+                        File.AppendAllText(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users", "log.log"), "Declined sending data for user " + user.Username + "because of user with that name not existing...\n");
                         return "User dosent exist";
                     }
-                    else if (Fernet.Decrypt(User.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username)).Key, User.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username)).Password) != user.Password)
+                    else if (Fernet.Decrypt(User.FromFile(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users", user.Username)).Key, User.FromFile(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users", user.Username)).Password) != user.Password)
                     {
-                        File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", "log.log"), "Declined sending data for user " + user.Username + "because of invalid password...\n");
+                        File.AppendAllText(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users", "log.log"), "Declined sending data for user " + user.Username + "because of invalid password...\n");
                         return "Invalid password";
                     }
                     else
                     {
-                        File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", "log.log"), "Sent all data for user with name " + user.Username + "\n!");
-                        return new User(User.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username))) { Key = null }.ToString();
+                        File.AppendAllText(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users", "log.log"), "Sent all data for user with name " + user.Username + "\n!");
+                        return new User(User.FromFile(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users", user.Username))) { Key = null }.ToString();
                     }
 
                 default:

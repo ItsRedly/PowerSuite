@@ -8,6 +8,8 @@ using System.Diagnostics;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Reflection;
+using System.Security.Principal;
 
 namespace PowerAPI
 {
@@ -632,31 +634,6 @@ namespace PowerAPI
     }
     #endregion
 
-    #region Compression
-    public static class Compression
-    {
-        public static void ExtractZipFile(string archivePath, string outFolder, string password = "")
-        {
-            using (FileStream fsInput = File.OpenRead(archivePath))
-            using (ZipFile zf = new(fsInput))
-            {
-                if (!string.IsNullOrEmpty(password)) { zf.Password = password; }
-                foreach (ZipEntry zipEntry in zf)
-                {
-                    if (!zipEntry.IsFile) { continue; }
-                    string entryFileName = zipEntry.Name;
-                    var fullZipToPath = Path.Combine(outFolder, entryFileName);
-                    var directoryName = Path.GetDirectoryName(fullZipToPath);
-                    if (directoryName.Length > 0) { Directory.CreateDirectory(directoryName); }
-                    byte[] buffer = new byte[4096];
-                    using (var zipStream = zf.GetInputStream(zipEntry))
-                    using (Stream fsOutput = File.Create(fullZipToPath)) { StreamUtils.Copy(zipStream, fsOutput, buffer); }
-                }
-            }
-        }
-    }
-    #endregion
-
     #region Console Tools
     public class ConsoleTools : TextWriter
     {
@@ -997,6 +974,29 @@ namespace PowerAPI
     #endregion
 
     #region Extensions
+    public static class Compression
+    {
+        public static void ExtractZipFile(string archivePath, string outFolder, string password = "")
+        {
+            using (FileStream fsInput = File.OpenRead(archivePath))
+            using (ZipFile zf = new(fsInput))
+            {
+                if (!string.IsNullOrEmpty(password)) { zf.Password = password; }
+                foreach (ZipEntry zipEntry in zf)
+                {
+                    if (!zipEntry.IsFile) { continue; }
+                    string entryFileName = zipEntry.Name;
+                    var fullZipToPath = Path.Combine(outFolder, entryFileName);
+                    var directoryName = Path.GetDirectoryName(fullZipToPath);
+                    if (directoryName.Length > 0) { Directory.CreateDirectory(directoryName); }
+                    byte[] buffer = new byte[4096];
+                    using (var zipStream = zf.GetInputStream(zipEntry))
+                    using (Stream fsOutput = File.Create(fullZipToPath)) { StreamUtils.Copy(zipStream, fsOutput, buffer); }
+                }
+            }
+        }
+    }
+
     public static class ImageExtensions
     {
         public static Image ConvertBase64ToImage(this string base64string)
@@ -1017,6 +1017,30 @@ namespace PowerAPI
                 return Convert.ToBase64String(memoryStream.ToArray());
             }
         }
+    }
+
+    public class ApplicationExtensions {
+        public static string GetApplicationLocation() { return Path.GetDirectoryName(GetApplicationPath()); }
+        public static string GetApplicationFileName() { return Path.GetFileName(GetApplicationPath()); }
+        public static string GetApplicationFileNameWithoutExtension() { return Path.GetFileNameWithoutExtension(GetApplicationPath()); }
+        public static string GetApplicationPath() { return Process.GetCurrentProcess().MainModule.FileName; }
+        public static void RelaunchIfNotAdmin()
+        {
+            if (!RunningAsAdmin())
+            {
+                Console.WriteLine("Running as admin required!");
+                ProcessStartInfo proc = new ProcessStartInfo();
+                proc.UseShellExecute = true;
+                proc.WorkingDirectory = Environment.CurrentDirectory;
+                proc.FileName = GetApplicationPath();
+                proc.Verb = "runas";
+                try { Process.Start(proc); }
+                catch { Console.WriteLine("This program must be run as an administrator!"); }
+                Environment.Exit(0);
+            }
+        }
+        
+        public static bool RunningAsAdmin() { return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator); }
     }
     #endregion
 
@@ -1173,7 +1197,7 @@ namespace PowerAPI
     public static class PowerSharp
     {
         public static void RunFile(string file) { RunString(File.ReadAllText(file)); }
-        public static void RunString(string str) { CSharpScript.RunAsync(str, ScriptOptions.Default.AddReferences(MetadataReference.CreateFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PowerAPI.dll")))); }
+        public static void RunString(string str) { CSharpScript.RunAsync(str, ScriptOptions.Default.AddReferences(MetadataReference.CreateFromFile(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "PowerAPI.dll")))); }
     }
     #endregion
 }
