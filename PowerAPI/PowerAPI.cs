@@ -1129,6 +1129,15 @@ namespace PowerAPI
         public string Key;
         public string ProfilePicture = ImageExtensions.ConvertImageToBase64(Properties.Resources.Redly);
 
+        public User(User user) : this(user.Username, user.Email, user.Password, user.Key, user.ProfilePicture) { }
+        public User(string username = "", string email = "", string password = "", string key = "", string profilePicture = "") {
+            Username = username;
+            Email = email;
+            Password = password;
+            Key = key;
+            ProfilePicture = profilePicture;
+        }
+
         public override string ToString() { return JsonConvert.SerializeObject(this); }
         public static User FromString(string str) { return JsonConvert.DeserializeObject<User>(str); }
         public static User FromFile(string path) { return User.FromString(File.ReadAllText(path)); }
@@ -1158,7 +1167,9 @@ namespace PowerAPI
             return (user, error);
         }
     }
+    #endregion
 
+    #region PowerSharp
     public static class PowerSharp
     {
         public static void RunFile(string file) { RunString(File.ReadAllText(file)); }

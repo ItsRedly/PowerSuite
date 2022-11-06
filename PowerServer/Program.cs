@@ -85,25 +85,23 @@ namespace PowerServer
 
         static string DBPostRequestHandler(string request, string requestUrl) // Handle Post Request using DB
         {
-            User user = User.FromString(request);
-            switch (requestUrl)
+            User user = User.FromString(request); // Create user from request string
+            switch (requestUrl) // Check request url
             {
-                case "SignIn":
-                    if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username)))
+                case "SignIn": // If request url "SignIn"
+                    if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username))) // If the file Users/ + User's username dosent exist
                     {
-                        (string key, string token) encryption = Fernet.Encrypt(user.Password);
-                        user.Password = encryption.token;
-                        user.Key = encryption.key;
-                        File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username), user.ToString());
-                        User oldUsr = User.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username));
-                        oldUsr.Key = null;
-                        File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", "log.log"), "Created user with name " + user.Username + "!\n");
-                        return oldUsr.ToString();
+                        (string key, string token) encryption = Fernet.Encrypt(user.Password); // Encrypt user password into object
+                        user.Password = encryption.token; // Set user's password to encrypted password's token
+                        user.Key = encryption.key; // Set user's key to encrypted password's key
+                        File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username), user.ToString()); // Write the user to file file Users/ + User's username
+                        File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", "log.log"), "Created user with name " + user.Username + "!\n"); // Write to logs "Created user with name + User's username + !\n"
+                        return new User(User.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username))) { Key = null }.ToString(); // Return to http client the user created but without the key
                     }
-                    else
+                    else // Else
                     {
-                        File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", "log.log"), "Declined creating user with name " + user.Username + " because a user with that name " + user.Username + " already exists...\n");
-                        return "Already exists";
+                        File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", "log.log"), "Declined creating user with name " + user.Username + " because a user with that name already exists...\n"); // Write to file Users/ + User's username "Declined creating user with name + User's username + because a user with that name already exists...\n"
+                        return "Already exists"; // Return to http client "Already exists"
                     }
 
                 case "LogIn":
@@ -119,10 +117,8 @@ namespace PowerServer
                     }
                     else
                     {
-                        User oldUsr = User.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username));
-                        oldUsr.Key = null;
                         File.AppendAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", "log.log"), "Sent all data for user with name " + user.Username + "\n!");
-                        return oldUsr.ToString();
+                        return new User(User.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Users", user.Username))) { Key = null }.ToString();
                     }
 
                 default:
