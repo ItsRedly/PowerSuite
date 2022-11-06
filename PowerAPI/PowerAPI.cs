@@ -1024,23 +1024,11 @@ namespace PowerAPI
         public static string GetApplicationFileName() { return Path.GetFileName(GetApplicationPath()); }
         public static string GetApplicationFileNameWithoutExtension() { return Path.GetFileNameWithoutExtension(GetApplicationPath()); }
         public static string GetApplicationPath() { return Process.GetCurrentProcess().MainModule.FileName; }
-        public static void RelaunchIfNotAdmin()
-        {
-            if (!RunningAsAdmin())
-            {
-                Console.WriteLine("Running as admin required!");
-                ProcessStartInfo proc = new ProcessStartInfo();
-                proc.UseShellExecute = true;
-                proc.WorkingDirectory = Environment.CurrentDirectory;
-                proc.FileName = GetApplicationPath();
-                proc.Verb = "runas";
-                try { Process.Start(proc); }
-                catch { Console.WriteLine("This program must be run as an administrator!"); }
-                Environment.Exit(0);
-            }
-        }
         
-        public static bool RunningAsAdmin() { return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator); }
+        public static bool IsRunningAsAdmin() {
+            try { return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator); }
+            catch { return false; }
+        }
     }
     #endregion
 

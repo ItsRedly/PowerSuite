@@ -13,7 +13,6 @@ namespace PowerServer
         [STAThread]
         public static void Main(string[] args) // Program entry point
         {
-            ApplicationExtensions.RelaunchIfNotAdmin(); // Relaunch app if not admin
             tools = new("PowerServer"); // Initializing the ConsoleTools
             if (args.Length > 1 || args.Length == 1 && args[0] == "/help") // Check if it has help/incorrect params
             {
@@ -26,20 +25,22 @@ namespace PowerServer
             if (!Directory.Exists(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users"))) { Directory.CreateDirectory(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Users")); } // Create Users directory if dosent exist
             if (!Directory.Exists(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Website"))) { Directory.CreateDirectory(Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Website")); } // Create Website directory if dosent exist
             webServer = new(80, Path.Combine(ApplicationExtensions.GetApplicationLocation(), "Website")); // Initializing the HTTP server
-            if (settings.EnableDB) { webServer.PostRequestHandle += DBPostRequestHandler; } // Enable DB case enabled on server settings
+            if (settings.EnableDB && ApplicationExtensions.IsRunningAsAdmin()) { webServer.PostRequestHandle += DBPostRequestHandler; } // Enable DB case enabled on server settings
             if (settings.EnableWebServer) { webServer.Start(); } // Start HTTP server case enabled on server settings
 
             while (true) // App loop
             {
-                switch (tools.Select(new string[] { (settings.EnableDB ? "Disable" : "Enable") + " PowerDB", (settings.EnableWebServer ? "Disable" : "Enable") + " PowerWeb", "Run PowerSend", "Save config file", "Exit" })) // Show selection prompt
+                switch (tools.Select(new string[] { (settings.EnableDB || !ApplicationExtensions.IsRunningAsAdmin() ? "Disable" : "Enable") + " PowerDB", (settings.EnableWebServer || !ApplicationExtensions.IsRunningAsAdmin() ? "Disable" : "Enable") + " PowerWeb", "Run PowerSend", "Save config file", "Exit" })) // Show selection prompt
                 {
                     case 1: //Case to enable/disable DB
+                        if (!ApplicationExtensions.IsRunningAsAdmin()) { break; } // If not running as admin, goto next iteration of loop
                         settings.EnableDB = !settings.EnableDB; // Change DB status to opposite of what it currently is
                         if (settings.EnableDB) { webServer.PostRequestHandle += DBPostRequestHandler; } // Enable DB case enabled on server settings
                         else { webServer.PostRequestHandle -= DBPostRequestHandler; } // Disable DB case not enabled on server settings
                         break; // Goto next iteration of loop
 
                     case 2: // Case to enable/disable HTTP server
+                        if (!ApplicationExtensions.IsRunningAsAdmin()) { break; } // If not running as admin, goto next iteration of loop
                         settings.EnableWebServer = !settings.EnableWebServer; //Change HTTP server status to opposite of what it currently is
                         if (settings.EnableWebServer) { webServer.Start(); } // Start HTTP server case enabled on server settings
                         else { webServer.Stop(); } // Stop HTTP server case not enabled on server settings
