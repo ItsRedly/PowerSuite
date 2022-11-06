@@ -8,8 +8,14 @@ using System.Diagnostics;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Reflection;
+using System.Drawing;
 using System.Security.Principal;
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace PowerAPI
 {
@@ -46,6 +52,8 @@ namespace PowerAPI
 
         [DllImport("user32.dll")]
         public static extern int DrawText(IntPtr hDC, string lpString, int nCount, ref Rectangle lpRect, uint uFormat);
+        [DllImport("user32.dll")]
+        public static extern int FillRect(IntPtr hDC, [In] ref Rectangle lprc, IntPtr hbr);
 
         [DllImport("user32.dll")]
         public static extern bool EndPaint(IntPtr hWnd, [In] ref PaintStruct lpPaint);
@@ -58,9 +66,6 @@ namespace PowerAPI
 
         [DllImport("user32.dll")]
         public static extern IntPtr LoadIcon(IntPtr hInstance, IntPtr lpIConName);
-
-        [DllImport("gdi32.dll")]
-        public static extern IntPtr GetStockObject(StockObjects fnObject);
 
         [DllImport("user32.dll")]
         public static extern MessageBoxResult MessageBox(IntPtr hWnd, string text, string caption, MessageBoxOptions options);
@@ -88,9 +93,21 @@ namespace PowerAPI
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+        [DllImport("gdi32.dll", EntryPoint="CreateSolidBrush", SetLastError=true)]
+        public static extern IntPtr CreateSolidBrush(ColorReference crColor);
+        [DllImport("gdi32.dll")]
+        public static extern uint SetClassLongPtr32(IntPtr hWnd, ClassLongFlags nIndex, uint dwNewLong);
+        [DllImport("user32.dll", EntryPoint="SetClassLongPtr")]
+        public static extern IntPtr SetClassLongPtr64(IntPtr hWnd, ClassLongFlags nIndex, IntPtr dwNewLong);
         #endregion
 
         #region Other methods
+        public static IntPtr SetClassLongPtr(IntPtr hWnd, ClassLongFlags nIndex, IntPtr dwNewLong)
+        {
+            if (IntPtr.Size > 4) { return SetClassLongPtr64(hWnd, nIndex, dwNewLong); }
+            else { return new IntPtr(SetClassLongPtr32(hWnd, nIndex, unchecked((uint)dwNewLong.ToInt32()))); }
+        }
+
         public static Point GetPointFromInt(IntPtr value)
         {
             uint xy = unchecked(IntPtr.Size == 8 ? (uint)value.ToInt64() : (uint)value.ToInt32());
@@ -100,6 +117,23 @@ namespace PowerAPI
         }
         #endregion
     }
+
+    #region Class Long Flags
+    public enum ClassLongFlags : int
+    {
+         GCLP_MENUNAME = -8,
+         GCLP_HBRBACKGROUND = -10,
+         GCLP_HCURSOR = -12,
+         GCLP_HICON = -14,
+         GCLP_HMODULE = -16,
+         GCL_CBWNDEXTRA = -18,
+         GCL_CBCLSEXTRA = -20,
+         GCLP_WNDPROC = -24,
+         GCL_STYLE = -26,
+         GCLP_HICONSM = -34,
+         GCW_ATOM = -32
+    }
+    #endregion
 
     #region Constants
     public static class Win32DTConstant
@@ -139,32 +173,6 @@ namespace PowerAPI
         public const int IDC_HAND = 32649;
         public const int IDC_APPSTARTING = 32650;
         public const int IDC_HELP = 32651;
-    }
-    #endregion
-
-    #region Stock Objects
-    public enum StockObjects
-    {
-        WHITE_BRUSH = 0,
-        LTGRAY_BRUSH = 1,
-        GRAY_BRUSH = 2,
-        DKGRAY_BRUSH = 3,
-        BLACK_BRUSH = 4,
-        NULL_BRUSH = 5,
-        HOLLOW_BRUSH = NULL_BRUSH,
-        WHITE_PEN = 6,
-        BLACK_PEN = 7,
-        NULL_PEN = 8,
-        OEM_FIXED_FONT = 10,
-        ANSI_FIXED_FONT = 11,
-        ANSI_VAR_FONT = 12,
-        SYSTEM_FONT = 13,
-        DEVICE_DEFAULT_FONT = 14,
-        DEFAULT_PALETTE = 15,
-        SYSTEM_FIXED_FONT = 16,
-        DEFAULT_GUI_FONT = 17,
-        DC_BRUSH = 18,
-        DC_PEN = 19,
     }
     #endregion
 
@@ -634,6 +642,43 @@ namespace PowerAPI
     }
     #endregion
 
+    #region Stock Objects
+    public enum StockObjects
+    {  
+        WHITE_BRUSH = 0,
+        LTGRAY_BRUSH = 1,
+        GRAY_BRUSH = 2,
+        DKGRAY_BRUSH = 3,
+        BLACK_BRUSH = 4,
+        NULL_BRUSH = 5,
+        HOLLOW_BRUSH = NULL_BRUSH,
+        WHITE_PEN = 6,
+        BLACK_PEN = 7,
+        NULL_PEN = 8,
+        OEM_FIXED_FONT = 10,
+        ANSI_FIXED_FONT = 11,
+        ANSI_VAR_FONT = 12,
+        SYSTEM_FONT = 13,
+        DEVICE_DEFAULT_FONT = 14,
+        DEFAULT_PALETTE = 15,
+        SYSTEM_FIXED_FONT = 16,
+        DEFAULT_GUI_FONT = 17,
+        DC_BRUSH = 18,
+        DC_PEN = 19,
+    }
+    #endregion
+
+    #region Color reference
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ColorReference
+    {
+        public uint ColorDWORD;
+        public ColorReference(Color color) { ColorDWORD = (uint) color.R + (((uint) color.G) << 8) + (((uint) color.B) << 16); }
+        public Color GetColor() { return Color.FromArgb((int) (0x000000FFU & ColorDWORD), (int) (0x0000FF00U & ColorDWORD) >> 8, (int) (0x00FF0000U & ColorDWORD) >> 16); }
+        public void SetColor(Color color) { ColorDWORD = (uint) color.R + (((uint) color.G) << 8) + (((uint) color.B) << 16); }
+    }
+    #endregion
+
     #region Console Tools
     public class ConsoleTools : TextWriter
     {
@@ -845,16 +890,17 @@ namespace PowerAPI
     public class Window
     {
         IntPtr hwnd;
+        ColorReference backgroundColor = new ColorReference(Color.White);
         public List<Control> Controls = new();
         public Point Location = new(50, 50);
         public Size Size = new(500, 500);
         public string Title = "Untitled window";
         public bool Running = false;
+        public Color BackgroundColor { get { return backgroundColor.GetColor(); } set { backgroundColor.SetColor(value); } }
 
         public Window(string title = "Untitled window")
         {
             Title = title;
-            IntPtr hInstance = Process.GetCurrentProcess().Handle;
             WndClassEx wndClass = new();
             wndClass.cbSize = Marshal.SizeOf(typeof(WndClassEx));
             wndClass.style = (int)(ClassStyles.HorizontalRedraw | ClassStyles.VerticalRedraw);
@@ -868,13 +914,12 @@ namespace PowerAPI
             }));
             wndClass.cbClsExtra = 0;
             wndClass.cbWndExtra = 0;
-            wndClass.hInstance = hInstance;
+            wndClass.hInstance = Process.GetCurrentProcess().Handle;
+            wndClass.hbrBackground = API.CreateSolidBrush(backgroundColor);
             wndClass.hCursor = API.LoadCursor(IntPtr.Zero, (int)Win32IDCConstants.IDC_ARROW);
-            wndClass.hbrBackground = API.GetStockObject(StockObjects.WHITE_BRUSH);
             wndClass.lpszMenuName = null;
             wndClass.lpszClassName = Title;
-            UInt16 regRest = API.RegisterClassEx2(ref wndClass);
-            hwnd = API.CreateWindowEx2(0, regRest, title, WindowStyles.WS_OVERLAPPEDWINDOW, -1, -1, -1, -1, IntPtr.Zero, IntPtr.Zero, hInstance, IntPtr.Zero);
+            hwnd = API.CreateWindowEx2(0, API.RegisterClassEx2(ref wndClass), title, WindowStyles.WS_OVERLAPPEDWINDOW, -1, -1, -1, -1, IntPtr.Zero, IntPtr.Zero, Process.GetCurrentProcess().Handle, IntPtr.Zero);
         }
 
         public Window(Point startLoc, string title = "Untitled window") : this(title) { Location = startLoc; }
@@ -923,13 +968,12 @@ namespace PowerAPI
         {
             Running = true;
             API.ShowWindow(hwnd, ShowWindowType.Normal);
-            API.UpdateWindow(hwnd);
-            API.UpdateWindow(hwnd);
             API.SetWindowPos(hwnd, IntPtr.Zero, Location.X, Location.Y, Size.Width, Size.Height, 0);
             while (true)
             {
                 if (API.GetMessage(out Msg msg, IntPtr.Zero, 0, 0) == 0) { break; }
                 if (!Running) { API.PostQuitMessage(0); }
+                API.SetClassLongPtr(hwnd, ClassLongFlags.GCLP_HBRBACKGROUND, API.CreateSolidBrush(backgroundColor));
                 API.SetWindowText(hwnd, Title);
                 API.TranslateMessage(ref msg);
                 API.DispatchMessage(ref msg);

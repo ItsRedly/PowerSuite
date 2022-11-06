@@ -2,25 +2,26 @@
     "version": "0.2.0",
     "configurations": [
         {
-            // Use IntelliSense to find out which attributes exist for C# debugging
-            // Use hover for the description of the existing attributes
-            // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
-            "name": ".NET Core Launch (console)",
+            "name": "Launch PowerServer",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
-            // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/PowerServer/bin/Debug/net6.0-windows/PowerServer.dll",
+            "preLaunchTask": "BuildPowerServer",
+            "program": "${workspaceFolder}/PowerServer/bin/Release/net6.0-windows/PowerServer.exe",
             "args": [],
-            "cwd": "${workspaceFolder}/PowerServer",
-            // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
+            "cwd": "${workspaceFolder}/PowerServer/bin/Release/net6.0-windows/",
             "console": "externalTerminal",
             "stopAtEntry": false
         },
         {
-            "name": ".NET Core Attach",
+            "name": "Launch PowerTalk",
             "type": "coreclr",
-            "request": "attach"
-        }
+            "request": "launch",
+            "preLaunchTask": "BuildPowerTalk",
+            "program": "${workspaceFolder}/PowerTalk/bin/Release/net6.0-windows/PowerTalk.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/PowerTalk/bin/Release/net6.0-windows/",
+            "console": "externalTerminal",
+            "stopAtEntry": false
+        },
     ]
 }
