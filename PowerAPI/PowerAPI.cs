@@ -34,51 +34,37 @@ namespace PowerAPI
         public static extern IntPtr CreateWindowEx2(WindowStylesEx dwExStyle, UInt16 lpClassName, string lpWindowName, WindowStyles dwStyle, int x, int y, int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
         [DllImport("user32.dll")]
         public static extern ushort RegisterClass([In] ref WndClass lpWndClass);
-
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ShowWindow(IntPtr hWnd, ShowWindowType nCmdShow);
         [DllImport("user32.dll")]
         public static extern bool CloseWindow(IntPtr hWnd);
-
         [DllImport("user32.dll")]
         public static extern IntPtr BeginPaint(IntPtr hwnd, out PaintStruct lpPaint);
-
         [DllImport("user32.dll")]
         public static extern IntPtr DefWindowProc(IntPtr hWnd, MessageType uMsg, IntPtr wParam, IntPtr lParam);
-
         [DllImport("user32.dll")]
         public static extern bool GetClientRect(IntPtr hWnd, out Rectangle lpRect);
-
         [DllImport("user32.dll")]
         public static extern int DrawText(IntPtr hDC, string lpString, int nCount, ref Rectangle lpRect, uint uFormat);
         [DllImport("user32.dll")]
         public static extern int FillRect(IntPtr hDC, [In] ref Rectangle lprc, IntPtr hbr);
-
         [DllImport("user32.dll")]
         public static extern bool EndPaint(IntPtr hWnd, [In] ref PaintStruct lpPaint);
-
         [DllImport("user32.dll")]
         public static extern void PostQuitMessage(int nExitCode);
-
         [DllImport("user32.dll")]
         public static extern IntPtr LoadIcon(IntPtr hInstance, string lpIconName);
-
         [DllImport("user32.dll")]
         public static extern IntPtr LoadIcon(IntPtr hInstance, IntPtr lpIConName);
-
         [DllImport("user32.dll")]
         public static extern MessageBoxResult MessageBox(IntPtr hWnd, string text, string caption, MessageBoxOptions options);
-
         [DllImport("user32.dll")]
         public static extern bool UpdateWindow(IntPtr hWnd);
-
         [DllImport("user32.dll")]
         public static extern IntPtr LoadCursor(IntPtr hInstance, int lpCursorName);
-
         [DllImport("user32.dll")]
         public static extern short RegisterClassEx([In] ref WndClassEx lpwcx);
-
         [DllImport("user32.dll", SetLastError = true, EntryPoint = "RegisterClassEx")]
         public static extern UInt16 RegisterClassEx2([In] ref WndClassEx lpwcx);
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
@@ -87,10 +73,8 @@ namespace PowerAPI
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, UInt32 uFlags);
         [DllImport("kernel32.dll")]
         public static extern IntPtr GetConsoleWindow();
-
         [DllImport("user32.dll")]
         public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
-
         [DllImport("user32.dll")]
         public static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
         [DllImport("gdi32.dll", EntryPoint="CreateSolidBrush", SetLastError=true)]
@@ -99,6 +83,10 @@ namespace PowerAPI
         public static extern uint SetClassLongPtr32(IntPtr hWnd, ClassLongFlags nIndex, uint dwNewLong);
         [DllImport("user32.dll", EntryPoint="SetClassLongPtr")]
         public static extern IntPtr SetClassLongPtr64(IntPtr hWnd, ClassLongFlags nIndex, IntPtr dwNewLong);
+        [DllImport("user32.dll")]
+        public extern static void InvalidateRect(IntPtr handle, Rectangle rect, bool erase);
+        [DllImport("gdi32.dll")]
+        public static extern int SetBkMode(IntPtr hdc, int iBkMode);
         #endregion
 
         #region Other methods
@@ -930,6 +918,7 @@ namespace PowerAPI
             {
                 case MessageType.PAINT:
                     IntPtr hdc = API.BeginPaint(hWnd, out PaintStruct ps);
+                    API.SetBkMode(hdc, 1);
                     Controls.ForEach((Control control) =>
                     {
                         if (control.IsEnabled) { control.Draw(hWnd, hdc); }
@@ -973,6 +962,8 @@ namespace PowerAPI
             {
                 if (API.GetMessage(out Msg msg, IntPtr.Zero, 0, 0) == 0) { break; }
                 if (!Running) { API.PostQuitMessage(0); }
+                API.GetClientRect(hwnd, out Rectangle rect);
+                API.InvalidateRect(hwnd, rect, true);
                 API.SetClassLongPtr(hwnd, ClassLongFlags.GCLP_HBRBACKGROUND, API.CreateSolidBrush(backgroundColor));
                 API.SetWindowText(hwnd, Title);
                 API.TranslateMessage(ref msg);
