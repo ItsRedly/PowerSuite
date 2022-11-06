@@ -6,9 +6,12 @@ namespace PowerTalk {
         public static void Main() {
             Window window = new Window("PowerTalk");
             window.BackgroundColor = Color.LightBlue;
-            window.Controls.Add(new TextControl("lol") { IsHCentered = true });
-            window.Controls.Add(new TextControl("TUA MÃE!!!!") { Location = new Point(69, 69) });
+            window.Controls.Add(new TextControl(window.Title) { IsHCentered = true });
+            window.Controls.Add(new TextControl("UR MUM!!!!") { Location = new Point(69, 69) });
+            window.Controls.Add(new TextControl("UR MUM!!!!") { Location = new Point(420, 420) });
             window.Show();
         }
     }
 }
+
+//
