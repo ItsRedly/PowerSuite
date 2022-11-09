@@ -1,14 +1,5 @@
-C:\Users\alves\Desktop\PowerSuite\PowerAPI\bin\Release\net6.0-windows\PowerAPI.deps.json
-C:\Users\alves\Desktop\PowerSuite\PowerAPI\bin\Release\net6.0-windows\PowerAPI.dll
-C:\Users\alves\Desktop\PowerSuite\PowerAPI\bin\Release\net6.0-windows\PowerAPI.pdb
 C:\Users\alves\Desktop\PowerSuite\PowerAPI\obj\Release\net6.0-windows\PowerAPI.csproj.AssemblyReference.cache
-C:\Users\alves\Desktop\PowerSuite\PowerAPI\obj\Release\net6.0-windows\PowerAPI.Properties.Resources.resources
-C:\Users\alves\Desktop\PowerSuite\PowerAPI\obj\Release\net6.0-windows\PowerAPI.csproj.GenerateResource.cache
 C:\Users\alves\Desktop\PowerSuite\PowerAPI\obj\Release\net6.0-windows\PowerAPI.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\alves\Desktop\PowerSuite\PowerAPI\obj\Release\net6.0-windows\PowerAPI.AssemblyInfoInputs.cache
 C:\Users\alves\Desktop\PowerSuite\PowerAPI\obj\Release\net6.0-windows\PowerAPI.AssemblyInfo.cs
 C:\Users\alves\Desktop\PowerSuite\PowerAPI\obj\Release\net6.0-windows\PowerAPI.csproj.CoreCompileInputs.cache
-C:\Users\alves\Desktop\PowerSuite\PowerAPI\obj\Release\net6.0-windows\PowerAPI.dll
-C:\Users\alves\Desktop\PowerSuite\PowerAPI\obj\Release\net6.0-windows\refint\PowerAPI.dll
-C:\Users\alves\Desktop\PowerSuite\PowerAPI\obj\Release\net6.0-windows\PowerAPI.pdb
-C:\Users\alves\Desktop\PowerSuite\PowerAPI\obj\Release\net6.0-windows\ref\PowerAPI.dll

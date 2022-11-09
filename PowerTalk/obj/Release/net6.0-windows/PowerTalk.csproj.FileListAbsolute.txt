@@ -74,3 +74,9 @@ C:\Users\alves\Desktop\PowerSuite\PowerTalk\obj\Release\net6.0-windows\refint\Po
 C:\Users\alves\Desktop\PowerSuite\PowerTalk\obj\Release\net6.0-windows\PowerTalk.pdb
 C:\Users\alves\Desktop\PowerSuite\PowerTalk\obj\Release\net6.0-windows\PowerTalk.genruntimeconfig.cache
 C:\Users\alves\Desktop\PowerSuite\PowerTalk\obj\Release\net6.0-windows\ref\PowerTalk.dll
+C:\Users\alves\Desktop\PowerSuite\PowerTalk\bin\Release\net6.0-windows\Microsoft.Win32.SystemEvents.dll
+C:\Users\alves\Desktop\PowerSuite\PowerTalk\bin\Release\net6.0-windows\System.Drawing.Common.dll
+C:\Users\alves\Desktop\PowerSuite\PowerTalk\bin\Release\net6.0-windows\System.Resources.Extensions.dll
+C:\Users\alves\Desktop\PowerSuite\PowerTalk\bin\Release\net6.0-windows\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\alves\Desktop\PowerSuite\PowerTalk\bin\Release\net6.0-windows\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
+C:\Users\alves\Desktop\PowerSuite\PowerTalk\bin\Release\net6.0-windows\runtimes\win\lib\net6.0\System.Drawing.Common.dll
